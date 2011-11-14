@@ -10,6 +10,8 @@ class ErrorHandler
 	private $exception_handler_registered = false;
 	/** @var \Jamm\Tester\DebugTracer */
 	private $debug_tracer;
+	private $max_errors_count = 100;
+	private $errors_count = 0;
 
 	public function __construct(IErrorLogger $Logger = null, IMessageSender $MessageSender = null)
 	{
@@ -60,8 +62,19 @@ class ErrorHandler
 
 	public function HandleError($error_code, $error_message, $filepath = '', $line = 0)
 	{
+		if ($this->isErrorsCountOverLimit()) return false;
 		$Error = $this->constructErrorObject($error_code, $error_message, $filepath, $line);
 		$this->HandleErrorObject($Error);
+	}
+
+	protected function isErrorsCountOverLimit()
+	{
+		if ($this->errors_count > $this->max_errors_count) return true;
+		else
+		{
+			$this->errors_count++;
+			return false;
+		}
 	}
 
 	private function HandleErrorObject(Error $Error)
@@ -80,6 +93,7 @@ class ErrorHandler
 
 	public function HandleException(\Exception $Exception)
 	{
+		if ($this->isErrorsCountOverLimit()) return false;
 		$Error = $this->constructErrorObject($Exception->getCode(), $Exception->getMessage(), $Exception->getFile(), $Exception->getLine());
 		$this->HandleErrorObject($Error);
 	}
@@ -124,5 +138,15 @@ class ErrorHandler
 	{
 		if (empty($this->debug_tracer)) $this->debug_tracer = new \Jamm\Tester\DebugTracer();
 		return $this->debug_tracer->getCurrentBacktrace();
+	}
+
+	public function setMaxErrorsCount($max_errors_count)
+	{
+		$this->max_errors_count = $max_errors_count;
+	}
+
+	public function getErrorsCount()
+	{
+		return $this->errors_count;
 	}
 }
