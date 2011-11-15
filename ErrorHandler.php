@@ -31,6 +31,20 @@ class ErrorHandler
 		{
 			$this->exception_handler_registered = true;
 		}
+
+		register_shutdown_function(array($this, 'shutdown_handler'));
+	}
+
+	public function shutdown_handler()
+	{
+		$last_error = error_get_last();
+		if (!empty($last_error))
+		{
+			if ($last_error['type'] & $this->errors_types)
+			{
+				$this->HandleError($last_error['type'], $last_error['message'], $last_error['file'], $last_error['line']);
+			}
+		}
 	}
 
 	protected function getNewErrorObject()
