@@ -7,7 +7,7 @@ class ErrorLogger implements IErrorLogger
 	protected $storage;
 	private $cache_key = 'messages';
 	const errors_count_limit = 100;
-	const log_ttl            = 604800;
+	const log_ttl = 604800;
 
 	public function WriteError(Error $Error)
 	{

@@ -59,11 +59,11 @@ class WatchPointsPrinter
 		}
 	}
 
-	public function getGDImageOfMemoryLine(Watcher $Watcher, $width, $height, $y_scale = 1, $memory_size_scale = 1048576)
+	public function getGDImageOfMemoryLine(Watcher $Watcher, $width, $height)
 	{
 		$points = $Watcher->getPointsArray();
-		if (empty($points) || empty($y_scale) || empty($memory_size_scale)) return false;
-
+		if (empty($points)) return false;
+		
 		$max_y        = $height;
 		$max_x        = $width;
 		$img          = imagecreatetruecolor($max_x, $max_y);
@@ -77,9 +77,9 @@ class WatchPointsPrinter
 		$x_step = intval(($max_x)/100);
 		foreach ($points as $point)
 		{
-			$value = round($point[$Watcher::point_memory]/$memory_size_scale, 2);
+			$value = round($point[$Watcher::point_memory]/1048576, 2); //1048576 = 1Mb
 			$new_x = $x+$x_step;
-			$new_y = $value*$y_scale;
+			$new_y = $value*2;
 			imageline($img, $x+1, $max_y-$y, $new_x, $max_y-$new_y, $line_color);
 			$x = $new_x;
 			$y = $new_y;
