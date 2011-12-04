@@ -12,6 +12,7 @@ class Watcher
 	private $do_exit_on_stop_signal = true;
 	private $memory_reserve = 10485760; //10Mb
 	private $max_memory_limit;
+	private $in_throw = false;
 
 	const point_time   = 'time';
 	const point_memory = 'memory';
@@ -30,7 +31,7 @@ class Watcher
 	public function setPoint($point_name)
 	{
 		$this->CheckStopKey();
-		
+
 		$data = $this->getDataForPoint($point_name);
 		$this->storage->save($this->key_point, $data);
 		$this->addLinePoint($data);
@@ -40,7 +41,7 @@ class Watcher
 	 * @param string $point_name
 	 * @param $ExitWatcher set variable here to get Watcher into scope.
 	 *  When this object will be destructed, event will be generated, to catch exiting from scope of function or loop.
-	 * @see      http://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization
+	 * @see	  http://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization
 	 * @return \Jamm\Memory\KeyAutoUnlocker
 	 */
 	public function setWatchedPoint($point_name, &$ExitWatcher)
@@ -53,6 +54,11 @@ class Watcher
 
 	public function watchFunctionExit(\Jamm\Memory\IKeyLocker $ExitWatcher = NULL)
 	{
+		if ($this->in_throw)
+		{
+			$ExitWatcher->revoke();
+			return false;
+		}
 		$point_name = ':exit';
 		if (!empty($ExitWatcher))
 		{
@@ -68,7 +74,8 @@ class Watcher
 		$current_memory_usage = memory_get_usage();
 		if (($this->max_memory_limit-$current_memory_usage) < $this->memory_reserve)
 		{
-			throw new Exception('Memory limit, max: '.round($this->max_memory_limit/1048576).'Mb, current: '.round($current_memory_usage/1048576).'Mb, minimum: '.round($this->memory_reserve/1048576).'Mb ');
+			$this->in_throw = true;
+			throw new \Exception('Memory limit, max: '.round($this->max_memory_limit/1048576).'Mb, current: '.round($current_memory_usage/1048576).'Mb, minimum: '.round($this->memory_reserve/1048576).'Mb ');
 		}
 	}
 

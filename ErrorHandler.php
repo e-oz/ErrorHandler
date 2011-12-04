@@ -15,23 +15,17 @@ class ErrorHandler
 
 	public function __construct(IErrorLogger $Logger = null, IMessageSender $MessageSender = null)
 	{
-		$this->Logger = $Logger;
+		$this->Logger        = $Logger;
 		$this->MessageSender = $MessageSender;
-		$this->errors_types = E_ALL & ~E_NOTICE;
+		$this->errors_types  = E_ALL & ~E_NOTICE;
 	}
 
 	public function Register()
 	{
-		if (set_error_handler(array($this, 'HandleError'), $this->errors_types))
-		{
-			$this->error_handler_registered = true;
-		}
-
-		if (set_exception_handler(array($this, 'HandleException')))
-		{
-			$this->exception_handler_registered = true;
-		}
-
+		set_error_handler(array($this, 'HandleError'), $this->errors_types);
+		$this->error_handler_registered = true;
+		set_exception_handler(array($this, 'HandleException'));
+		$this->exception_handler_registered = true;
 		register_shutdown_function(array($this, 'shutdown_handler'));
 	}
 
@@ -154,8 +148,7 @@ class ErrorHandler
 
 	private function getCurrentBacktrace()
 	{
-		if (empty($this->debug_tracer)) $this->debug_tracer = new \Jamm\Tester\DebugTracer();
-		return $this->debug_tracer->getCurrentBacktrace();
+		return $this->getDebugTracer()->getCurrentBacktrace();
 	}
 
 	public function setMaxErrorsCount($max_errors_count)
@@ -166,5 +159,22 @@ class ErrorHandler
 	public function getErrorsCount()
 	{
 		return $this->errors_count;
+	}
+
+	/**
+	 * @return \Jamm\Tester\DebugTracer
+	 */
+	public function getDebugTracer()
+	{
+		if (empty($this->debug_tracer)) $this->debug_tracer = new \Jamm\Tester\DebugTracer();
+		return $this->debug_tracer;
+	}
+
+	/**
+	 * @param \Jamm\Tester\DebugTracer $DebugTracer
+	 */
+	public function setDebugTracer(\Jamm\Tester\DebugTracer $DebugTracer)
+	{
+		$this->debug_tracer = $DebugTracer;
 	}
 }
