@@ -39,12 +39,12 @@ class Watcher
 
 	/**
 	 * @param string $point_name
-	 * @param $ExitWatcher set variable here to get Watcher into scope.
+	 * @param \Jamm\Memory\KeyAutoUnlocker $ExitWatcher set variable here to get Watcher into scope.
 	 *					 When this object will be destructed, event will be generated, to catch exiting from scope of function or loop.
 	 * @see	  http://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization
 	 * @return \Jamm\Memory\KeyAutoUnlocker
 	 */
-	public function setWatchedPoint($point_name, &$ExitWatcher)
+	public function setWatchedPoint($point_name, \Jamm\Memory\KeyAutoUnlocker &$ExitWatcher = NULL)
 	{
 		$this->setPoint($point_name);
 		if (empty($ExitWatcher))
