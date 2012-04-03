@@ -6,12 +6,13 @@ class ErrorLogger implements IErrorLogger
 	/** @var \Jamm\Memory\IMemoryStorage */
 	protected $storage;
 	private $cache_key = 'messages';
-	const errors_count_limit = 100;
-	const log_ttl = 604800;
+	private $errors_count_limit = 100;
+	private $log_ttl = 604800;
 
 	public function WriteError(Error $Error)
 	{
-		$this->storage->increment($this->cache_key, array($Error), self::errors_count_limit, self::log_ttl);
+		$this->storage->increment($this->cache_key, array($Error),
+			$this->errors_count_limit, $this->log_ttl);
 	}
 
 	public function __construct(\Jamm\Memory\IMemoryStorage $storage)
@@ -38,7 +39,7 @@ class ErrorLogger implements IErrorLogger
 			}
 
 			$message = array_shift($messages);
-			$this->storage->save($this->cache_key, $messages, self::log_ttl);
+			$this->storage->save($this->cache_key, $messages, $this->log_ttl);
 			return $message;
 		}
 		return false;
@@ -47,5 +48,15 @@ class ErrorLogger implements IErrorLogger
 	public function FlushLog()
 	{
 		$this->storage->del($this->cache_key);
+	}
+
+	public function setErrorsCountLimit($errors_count_limit)
+	{
+		$this->errors_count_limit = $errors_count_limit;
+	}
+
+	public function setLogTtl($log_ttl)
+	{
+		$this->log_ttl = $log_ttl;
 	}
 }
