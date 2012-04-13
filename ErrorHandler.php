@@ -53,7 +53,14 @@ class ErrorHandler
 		$Error->setMessage($error_message);
 		$Error->setFilepath($filepath);
 		$Error->setLine($line);
-		$Error->setDebugTrace($this->getCurrentBacktrace());
+		if ($error_code===E_USER_NOTICE)
+		{
+			$Error->setDebugTrace(NULL);
+		}
+		else
+		{
+			$Error->setDebugTrace($this->getCurrentBacktrace());
+		}
 		$Error->setRequest($this->getRequestData());
 		return $Error;
 	}
@@ -62,12 +69,14 @@ class ErrorHandler
 	{
 		if (!empty($_SERVER['REMOTE_ADDR']))
 		{
-			return "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']
+			$data = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']
 					."\nIP: ".$_SERVER['REMOTE_ADDR']
 					."\nUSER AGENT: ".$_SERVER['HTTP_USER_AGENT']
 					."\nSERVER_NAME.PHP_SELF: ".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']
-					."\nGET:\n".print_r($_GET, 1)
-					."\nPOST:\n".print_r($_POST, 1);
+					."\nMETHOD: ".$_SERVER['REQUEST_METHOD'];
+			if (!empty($_GET)) $data .= "\nGET:\n".print_r($_GET, 1);
+			if (!empty($_POST)) $data .= "\nPOST:\n".print_r($_POST, 1);
+			return $data;
 		}
 		else return 'command line';
 	}
@@ -112,7 +121,10 @@ class ErrorHandler
 
 	protected function FormatErrorMessage(Error $Error)
 	{
-		return '['.$Error->getCode().'] "'.$Error->getMessage().'" in file: '.$Error->getFilepath().', line: '.$Error->getLine();
+		return '['.$Error->getCode().'] "'.$Error->getMessage()
+				.'" in file: '.$Error->getFilepath()
+				.', line: '.$Error->getLine()
+				.PHP_EOL.$Error->getRequest();
 	}
 
 	public function setHandledErrorsTypes($errors_types)
