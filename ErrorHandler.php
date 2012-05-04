@@ -12,6 +12,7 @@ class ErrorHandler
 	private $debug_tracer;
 	private $max_errors_count = 100;
 	private $errors_count = 0;
+	private $ToStringConverter;
 
 	public function __construct(IErrorLogger $Logger = null, IMessageSender $MessageSender = null)
 	{
@@ -46,14 +47,14 @@ class ErrorHandler
 		return new Error();
 	}
 
-	private function constructErrorObject($error_code, $error_message, $filepath = '', $line = 0)
+	protected function constructErrorObject($error_code, $error_message, $filepath = '', $line = 0)
 	{
 		$Error = $this->getNewErrorObject();
 		$Error->setCode($error_code);
 		$Error->setMessage($error_message);
 		$Error->setFilepath($filepath);
 		$Error->setLine($line);
-		if ($error_code===E_USER_NOTICE)
+		if ($error_code===E_USER_NOTICE || $error_code===E_NOTICE)
 		{
 			$Error->setDebugTrace(NULL);
 		}
@@ -61,24 +62,45 @@ class ErrorHandler
 		{
 			$Error->setDebugTrace($this->getCurrentBacktrace());
 		}
-		$Error->setRequest($this->getRequestData());
+		if ($error_code===E_USER_ERROR || $error_code===E_USER_WARNING)
+		{
+			$Error->setRequest($this->getRequestData());
+		}
+		else
+		{
+			$Error->setRequest($this->getShortRequestData());
+		}
 		return $Error;
 	}
 
-	private function getRequestData()
+	protected function getRequestData()
 	{
-		if (!empty($_SERVER['REMOTE_ADDR']))
+		if (empty($_SERVER['REMOTE_ADDR'])) return 'command line';
+		$data = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']
+				."\nIP: ".$_SERVER['REMOTE_ADDR']
+				."\nUSER AGENT: ".$_SERVER['HTTP_USER_AGENT']
+				."\nSERVER_NAME.PHP_SELF: ".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']
+				."\nMETHOD: ".$_SERVER['REQUEST_METHOD'];
+		if (!empty($_GET))
 		{
-			$data = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']
-					."\nIP: ".$_SERVER['REMOTE_ADDR']
-					."\nUSER AGENT: ".$_SERVER['HTTP_USER_AGENT']
-					."\nSERVER_NAME.PHP_SELF: ".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']
-					."\nMETHOD: ".$_SERVER['REQUEST_METHOD'];
-			if (!empty($_GET)) $data .= "\nGET:\n".print_r($_GET, 1);
-			if (!empty($_POST)) $data .= "\nPOST:\n".print_r($_POST, 1);
-			return $data;
+			$data .= "\nGET:\n".$this->getToStringConverter()->getStringFrom($_GET);
 		}
-		else return 'command line';
+		if (!empty($_POST))
+		{
+			$data .= "\nPOST:\n".$this->getToStringConverter()->getStringFrom($_POST);
+		}
+		return $data;
+	}
+
+	protected function getShortRequestData()
+	{
+		if (empty($_SERVER['REMOTE_ADDR'])) return 'command line';
+		$data = $_SERVER['HTTP_HOST']
+				."\nIP: ".$_SERVER['REMOTE_ADDR']
+				."\nUSER AGENT: ".$_SERVER['HTTP_USER_AGENT']
+				."\nSERVER_NAME: ".$_SERVER['SERVER_NAME']
+				."\nMETHOD: ".$_SERVER['REQUEST_METHOD'];
+		return $data;
 	}
 
 	public function HandleError($error_code, $error_message, $filepath = '', $line = 0)
@@ -121,7 +143,8 @@ class ErrorHandler
 
 	protected function FormatErrorMessage(Error $Error)
 	{
-		return '['.$Error->getCode().'] "'.$Error->getMessage()
+		return $Error->getTimestamp()
+				.' ['.$Error->getCode().'] "'.$Error->getMessage()
 				.'" in file: '.$Error->getFilepath()
 				.', line: '.$Error->getLine()
 				.PHP_EOL.$Error->getRequest();
@@ -188,5 +211,17 @@ class ErrorHandler
 	public function setDebugTracer(\Jamm\Tester\DebugTracer $DebugTracer)
 	{
 		$this->debug_tracer = $DebugTracer;
+	}
+
+	/**
+	 * @return ToStringConverter
+	 */
+	protected function getToStringConverter()
+	{
+		if (empty($this->ToStringConverter))
+		{
+			$this->ToStringConverter = new ToStringConverter();
+		}
+		return $this->ToStringConverter;
 	}
 }
