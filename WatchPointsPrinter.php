@@ -63,7 +63,6 @@ class WatchPointsPrinter
 	{
 		$points = $Watcher->getPointsArray();
 		if (empty($points) || empty($y_scale) || empty($memory_size_scale)) return false;
-
 		$max_y        = $height;
 		$max_x        = $width;
 		$img          = imagecreatetruecolor($max_x, $max_y);

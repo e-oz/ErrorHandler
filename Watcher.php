@@ -31,7 +31,6 @@ class Watcher
 	public function setPoint($point_name)
 	{
 		$this->CheckStopKey();
-
 		$data = $this->getDataForPoint($point_name);
 		$this->storage->save($this->key_point, $data);
 		$this->addLinePoint($data);
@@ -40,8 +39,8 @@ class Watcher
 	/**
 	 * @param string $point_name
 	 * @param \Jamm\Memory\KeyAutoUnlocker $ExitWatcher set variable here to get Watcher into scope.
-	 *					 When this object will be destructed, event will be generated, to catch exiting from scope of function or loop.
-	 * @see	  http://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization
+	 *                                                  When this object will be destructed, event will be generated, to catch exiting from scope of function or loop.
+	 * @see      http://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization
 	 * @return \Jamm\Memory\KeyAutoUnlocker
 	 */
 	public function setWatchedPoint($point_name, \Jamm\Memory\KeyAutoUnlocker &$ExitWatcher = NULL)

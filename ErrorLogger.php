@@ -30,14 +30,12 @@ class ErrorLogger implements IErrorLogger
 		if ($this->storage->acquire_key($this->cache_key, $auto_unlocker))
 		{
 			$messages = $this->storage->read($this->cache_key);
-
 			if (empty($messages)) return false;
 			if (!is_array($messages))
 			{
 				$this->FlushLog();
 				return $messages;
 			}
-
 			$message = array_shift($messages);
 			$this->storage->save($this->cache_key, $messages, $this->log_ttl);
 			return $message;

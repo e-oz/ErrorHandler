@@ -4,6 +4,7 @@ namespace Jamm\ErrorHandler;
 class ToStringConverter
 {
 	private $max_arr_key_length = 300;
+	private $skip_array_keys = array('password'=> true, 'pwd'=> true);
 
 	public function getStringFrom($mixed_value)
 	{
@@ -46,7 +47,6 @@ class ToStringConverter
 			trigger_error($exception->getMessage(), E_USER_WARNING);
 			return false;
 		}
-
 		return $result_array;
 	}
 
@@ -55,6 +55,10 @@ class ToStringConverter
 		if (empty($array)) return '()';
 		foreach ($array as $key=> $value)
 		{
+			if (isset($this->skip_array_keys[$key]))
+			{
+				$value = '...[hidden]...';
+			}
 			$new_value = $this->getStringFrom($value);
 			if (strlen($new_value) > $this->max_arr_key_length)
 			{
@@ -63,6 +67,11 @@ class ToStringConverter
 			$array[$key] = $new_value;
 		}
 		return print_r($array, 1);
+	}
+
+	public function addKeyToSkip($key)
+	{
+		$this->skip_array_keys[strtolower($key)] = true;
 	}
 
 	public function setMaxArrKeyLength($max_arr_key_length)

@@ -13,6 +13,7 @@ class ErrorHandler
 	private $max_errors_count = 100;
 	private $errors_count = 0;
 	private $ToStringConverter;
+	private $AssertException;
 
 	public function __construct(IErrorLogger $Logger = null, IMessageSender $MessageSender = null)
 	{
@@ -127,7 +128,6 @@ class ErrorHandler
 			$message = $this->FormatErrorMessage($Error);
 			$this->MessageSender->SendMessage($message);
 		}
-
 		if (!empty($this->Logger))
 		{
 			$this->Logger->WriteError($Error);
@@ -211,6 +211,32 @@ class ErrorHandler
 	public function setDebugTracer(\Jamm\Tester\DebugTracer $DebugTracer)
 	{
 		$this->debug_tracer = $DebugTracer;
+	}
+
+	public function setAssertBehavior($active = false, $bail = false)
+	{
+		assert_options(ASSERT_ACTIVE, $active);
+		assert_options(ASSERT_BAIL, $bail);
+	}
+
+	public function setAssertException(\Exception $Exception)
+	{
+		$this->AssertException = $Exception;
+		assert_options(ASSERT_CALLBACK, function($file, $line, $code) { $this->assertCallback($file, $line, $code); });
+	}
+
+	protected function assertCallback($file, $line, $code)
+	{
+		if (!empty($this->AssertException))
+		{
+			$Exception = clone $this->AssertException;
+		}
+		else
+		{
+			$Exception = new \Exception("Internal error", 500);
+		}
+		trigger_error("Assertion failed in file $file line $line with code $code", E_USER_WARNING);
+		throw $Exception;
 	}
 
 	/**
