@@ -1,6 +1,5 @@
 <?php
 namespace Jamm\ErrorHandler;
-
 interface IErrorLogger
 {
 	public function WriteError(Error $Error);

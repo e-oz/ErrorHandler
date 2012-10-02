@@ -1,6 +1,5 @@
 <?php
 namespace Jamm\ErrorHandler;
-
 class ErrorLogger implements IErrorLogger
 {
 	/** @var \Jamm\Memory\IMemoryStorage */

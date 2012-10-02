@@ -1,6 +1,5 @@
 <?php
 namespace Jamm\ErrorHandler;
-
 class WatchPointsPrinter
 {
 	private $new_line = "\n";

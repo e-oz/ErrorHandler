@@ -1,6 +1,5 @@
 <?php
 namespace Jamm\ErrorHandler;
-
 class ErrorHandler
 {
 	private $errors_types = E_ALL;
@@ -229,7 +228,8 @@ class ErrorHandler
 	{
 		if (!empty($this->AssertException))
 		{
-			$Exception = clone $this->AssertException;
+			$exception_class = get_class($this->AssertException);
+			$Exception       = new $exception_class('Internal error', 500);
 		}
 		else
 		{

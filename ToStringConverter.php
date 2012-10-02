@@ -1,9 +1,9 @@
 <?php
 namespace Jamm\ErrorHandler;
-
 class ToStringConverter
 {
-	private $max_arr_key_length = 300;
+	private $max_arr_key_length = 1000;
+	private $shorten_key_length = 30;
 	private $skip_array_keys = array('password'=> true, 'pwd'=> true);
 
 	public function getStringFrom($mixed_value)
@@ -62,7 +62,7 @@ class ToStringConverter
 			$new_value = $this->getStringFrom($value);
 			if (strlen($new_value) > $this->max_arr_key_length)
 			{
-				$new_value = '>>'.substr($new_value, 0, $this->max_arr_key_length-7).'...>>';
+				$new_value = substr($new_value, 0, $this->shorten_key_length).'...('.strlen($new_value).')>>';
 			}
 			$array[$key] = $new_value;
 		}
@@ -77,5 +77,15 @@ class ToStringConverter
 	public function setMaxArrKeyLength($max_arr_key_length)
 	{
 		$this->max_arr_key_length = $max_arr_key_length;
+	}
+
+	public function getShortenKeyLength()
+	{
+		return $this->shorten_key_length;
+	}
+
+	public function setShortenKeyLength($shorten_key_length)
+	{
+		$this->shorten_key_length = $shorten_key_length;
 	}
 }

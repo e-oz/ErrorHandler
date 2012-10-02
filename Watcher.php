@@ -1,6 +1,5 @@
 <?php
 namespace Jamm\ErrorHandler;
-
 class Watcher
 {
 	private $storage;

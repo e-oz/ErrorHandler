@@ -1,6 +1,5 @@
 <?php
 namespace Jamm\ErrorHandler;
-
 class MessageSender implements IMessageSender
 {
 	private $email;

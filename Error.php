@@ -1,6 +1,5 @@
 <?php
 namespace Jamm\ErrorHandler;
-
 class Error extends \Jamm\Tester\Error
 {
 	protected $request;
