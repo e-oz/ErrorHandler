@@ -7,7 +7,7 @@
 	"suggest": {
 		"jamm/memory": "allows to use memory (Redis, Memcached, APC) as storage for errors log"
 	},
-	"description": "",
+	"description": "Module for handling errors and uncaught exceptions (*ErrorHandler*), logging them in memory-storage (*ErrorLogger*) and notice admin about them (*MessageSender*). Also, Watcher can watch points of your process (it's especially handy for long-running processes), control memory usage and prevent unexpected process termination when memory limit is reached.",
 	"version": "1.0.0",
 	"keywords": ["errors", "log", "watch", "handler", "exception"],
 	"support": {
