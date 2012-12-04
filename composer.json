@@ -1,0 +1,32 @@
+{
+	"name": "jamm/errorhandler",
+	"require": {
+		"php": ">=5.4.0",
+		"jamm/tester": ">=1.0.0"
+	},
+	"suggest": {
+		"jamm/memory": "allows to use memory (Redis, Memcached, APC) as storage for errors log"
+	},
+	"description": "",
+	"version": "1.0.0",
+	"keywords": ["errors", "log", "watch", "handler", "exception"],
+	"support": {
+		"email": "normandiggs@gmail.com",
+		"source": "https://github.com/jamm/ErrorHandler"
+	},
+	"autoload": {
+		"psr-0": {
+			"Jamm\\ErrorHandler": ""
+		}
+	},
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Eugene OZ",
+			"email": "normandiggs@gmail.com",
+			"homepage": "https://github.com/jamm/",
+			"role": "Developer"
+		}
+	]
+}
