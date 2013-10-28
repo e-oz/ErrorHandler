@@ -12,6 +12,7 @@ class MessageSender implements IMessageSender
 	{
 		if (empty($email)) {
 			trigger_error('email is empty in message sender', E_USER_WARNING);
+			return false;
 		}
 		$this->addEmail($email);
 	}
