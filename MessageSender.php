@@ -2,24 +2,28 @@
 namespace Jamm\ErrorHandler;
 class MessageSender implements IMessageSender
 {
-	private $email;
+	private $emails;
 	private $subject = 'Error';
 
 	public function __construct($email)
 	{
-		$this->email = $email;
-		if (empty($email)) throw new \Exception('email is empty in message sender');
+		if (empty($email)) {
+			trigger_error('email is empty in message sender', E_USER_WARNING);
+		}
+		$this->addEmail($email);
 	}
 
 	public function SendMessage($message, $subject = '')
 	{
 		if (empty($subject)) $subject = $this->subject;
-		return mail($this->email, $subject, $message);
+		foreach ($this->getEmails() as $email) {
+			$this->sendEmail($email, $message, $subject);
+		}
 	}
 
-	public function setEmail($email)
+	public function addEmail($email)
 	{
-		$this->email = $email;
+		$this->emails[] = $email;
 	}
 
 	public function setSubject($subject)
@@ -30,9 +34,9 @@ class MessageSender implements IMessageSender
 	/**
 	 * @return mixed
 	 */
-	public function getEmail()
+	public function getEmails()
 	{
-		return $this->email;
+		return $this->emails;
 	}
 
 	/**
@@ -41,5 +45,16 @@ class MessageSender implements IMessageSender
 	public function getSubject()
 	{
 		return $this->subject;
+	}
+
+	/**
+	 * @param $email
+	 * @param $message
+	 * @param $subject
+	 * @return bool
+	 */
+	protected function sendEmail($email, $message, $subject)
+	{
+		return mail($email, $subject, $message);
 	}
 }
