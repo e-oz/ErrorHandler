@@ -26,4 +26,20 @@ class MessageSender implements IMessageSender
 	{
 		$this->subject = $subject;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getEmail()
+	{
+		return $this->email;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSubject()
+	{
+		return $this->subject;
+	}
 }

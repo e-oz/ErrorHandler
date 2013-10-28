@@ -26,12 +26,10 @@ class ErrorLogger implements IErrorLogger
 
 	public function getNextError()
 	{
-		if ($this->storage->acquire_key($this->cache_key, $auto_unlocker))
-		{
+		if ($this->storage->acquire_key($this->cache_key, $auto_unlocker)) {
 			$messages = $this->storage->read($this->cache_key);
 			if (empty($messages)) return false;
-			if (!is_array($messages))
-			{
+			if (!is_array($messages)) {
 				$this->FlushLog();
 				return $messages;
 			}
@@ -55,5 +53,37 @@ class ErrorLogger implements IErrorLogger
 	public function setLogTtl($log_ttl)
 	{
 		$this->log_ttl = $log_ttl;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCacheKey()
+	{
+		return $this->cache_key;
+	}
+
+	/**
+	 * @param string $cache_key
+	 */
+	public function setCacheKey($cache_key)
+	{
+		$this->cache_key = $cache_key;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getErrorsCountLimit()
+	{
+		return $this->errors_count_limit;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getLogTtl()
+	{
+		return $this->log_ttl;
 	}
 }
