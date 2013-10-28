@@ -19,6 +19,9 @@ class ErrorLogger implements IErrorLogger
 		$this->storage = $storage;
 	}
 
+	/**
+	 * @return Error[]
+	 */
 	public function getErrors()
 	{
 		return $this->storage->read($this->cache_key);
