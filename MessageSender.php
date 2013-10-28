@@ -5,6 +5,9 @@ class MessageSender implements IMessageSender
 	private $emails;
 	private $subject = 'Error';
 
+	/**
+	 * @param string|array $email at least one email should be set
+	 */
 	public function __construct($email)
 	{
 		if (empty($email)) {
@@ -21,9 +24,15 @@ class MessageSender implements IMessageSender
 		}
 	}
 
+	/**
+	 * @param string|array $email
+	 */
 	public function addEmail($email)
 	{
-		$this->emails[] = $email;
+		if (!is_array($email)) {
+			$email = [$email];
+		}
+		$this->emails = array_unique(array_merge($this->emails, $email));
 	}
 
 	public function setSubject($subject)
