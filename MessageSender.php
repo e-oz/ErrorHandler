@@ -2,7 +2,7 @@
 namespace Jamm\ErrorHandler;
 class MessageSender implements IMessageSender
 {
-	private $emails;
+	private $emails = [];
 	private $subject = 'Error';
 
 	/**
